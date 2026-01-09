@@ -46,9 +46,25 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
 
-# Executar migrations automaticamente
+# Executar migrations automaticamente (SEM seeders para evitar timeout)
 echo "📊 Executando migrations..."
-php artisan migrate --force --seed || echo "⚠️  Erro ao executar migrations/seeds, mas continuando..."
+php artisan migrate --force || echo "⚠️  Erro ao executar migrations, mas continuando..."
+
+# Criar usuário desenvolvedor padrão se não existir
+echo "👤 Criando usuário desenvolvedor padrão..."
+php artisan tinker --execute="
+if (!\App\Models\User::where('email', 'dev@codevilla.com')->exists()) {
+    \App\Models\User::create([
+        'name' => 'Desenvolvedor',
+        'email' => 'dev@codevilla.com',
+        'password' => bcrypt('Dev@2026'),
+        'role' => 'desenvolvedor'
+    ]);
+    echo 'Usuário desenvolvedor criado: dev@codevilla.com / Dev@2026\n';
+} else {
+    echo 'Usuário desenvolvedor já existe\n';
+}
+" || echo "⚠️  Erro ao criar usuário, mas continuando..."
 
 # Criar storage link em /tmp/storage
 if [ ! -d "/tmp/storage/app/public" ]; then
