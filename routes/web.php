@@ -106,16 +106,6 @@ Route::middleware(['auth', 'desenvolvedor'])->prefix('desenvolvedor')->name('des
 
     // Gestão de Usuários (Desenvolvedores, Coordenadores e Professores)
     Route::resource('users', \App\Http\Controllers\Desenvolvedor\UserController::class);
-    
-    // Rota para popular banco de dados (apenas em produção vazia)
-    Route::get('/seed-database', function () {
-        \Artisan::call('db:seed', ['--force' => true]);
-        return response()->json([
-            'success' => true,
-            'message' => 'Banco de dados populado com sucesso!',
-            'output' => \Artisan::output()
-        ]);
-    })->name('seed');
 });
 
 require __DIR__ . '/auth.php';
