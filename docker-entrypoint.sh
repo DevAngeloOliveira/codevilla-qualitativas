@@ -10,27 +10,11 @@ echo "🚀 Iniciando aplicação Codevilla no Cloud Run..."
 export PORT=${PORT:-8080}
 echo "📡 Usando porta: $PORT"
 
-# Substituir a porta no template do Nginx
-mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
-envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/sites-available/default
-ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-rm -f /etc/nginx/sites-enabled/default.dpkg-dist
-
-# Verificar se o nginx está configurado corretamente
-nginx -t || { echo "Erro na configuração do Nginx!"; cat /etc/nginx/sites-available/default; exit 1; }
-
 # Configurar diretórios writable no Cloud Run (filesystem é read-only exceto /tmp)
 echo "📁 Configurando diretórios de escrita..."
-mkdir -p /tmp/storage/{app,framework/{cache,sessions,views},logs}
-mkdir -p /tmp/cache
+mkdir -p /tmp/storage/{app/public,framework/{cache/data,sessions,testing,views},logs}
+mkdir -p /tmp/bootstrap/cache
 mkdir -p /tmp/database
-
-# Criar links simbólicos para diretórios writable
-rm -rf /var/www/html/storage
-ln -sf /tmp/storage /var/www/html/storage
-
-rm -rf /var/www/html/bootstrap/cache
-ln -sf /tmp/cache /var/www/html/bootstrap/cache
 
 # Criar arquivo SQLite em /tmp se estiver usando SQLite
 if [ "$DB_CONNECTION" = "sqlite" ]; then
@@ -39,9 +23,22 @@ if [ "$DB_CONNECTION" = "sqlite" ]; then
         echo "📝 Criando arquivo SQLite em /tmp..."
         touch "$DB_DATABASE"
         chmod 666 "$DB_DATABASE"
-        chmod 777 /tmp/database
     fi
+    chmod 777 /tmp/database
 fi
+
+# Ajustar permissões em /tmp
+chmod -R 777 /tmp/storage
+chmod -R 777 /tmp/bootstrap/cache
+
+# Substituir a porta no template do Nginx
+mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
+envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/sites-available/default
+ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+rm -f /etc/nginx/sites-enabled/default.dpkg-dist
+
+# Verificar se o nginx está configurado corretamente
+nginx -t || { echo "Erro na configuração do Nginx!"; cat /etc/nginx/sites-available/default; exit 1; }
 
 # Gerar APP_KEY se não existir
 if [ -z "$APP_KEY" ]; then
@@ -53,21 +50,15 @@ fi
 # echo "📊 Executando migrations..."
 # php artisan migrate --force
 
-# Criar storage link
-if [ ! -L "/var/www/html/public/storage" ]; then
-    echo "🔗 Criando storage link..."
-    php artisan storage:link --force || true
+# Criar storage link em /tmp/storage
+if [ ! -d "/tmp/storage/app/public" ]; then
+    mkdir -p /tmp/storage/app/public
 fi
 
-# Otimizar aplicação para produção
 echo "⚡ Otimizando aplicação..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
-
-# Ajustar permissões
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 echo "✅ Aplicação pronta!"
 echo "🌐 Escutando na porta $PORT"
