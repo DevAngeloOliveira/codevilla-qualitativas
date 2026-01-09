@@ -19,12 +19,27 @@ rm -f /etc/nginx/sites-enabled/default.dpkg-dist
 # Verificar se o nginx está configurado corretamente
 nginx -t || { echo "Erro na configuração do Nginx!"; cat /etc/nginx/sites-available/default; exit 1; }
 
-# Criar arquivo SQLite se estiver usando SQLite
+# Configurar diretórios writable no Cloud Run (filesystem é read-only exceto /tmp)
+echo "📁 Configurando diretórios de escrita..."
+mkdir -p /tmp/storage/{app,framework/{cache,sessions,views},logs}
+mkdir -p /tmp/cache
+mkdir -p /tmp/database
+
+# Criar links simbólicos para diretórios writable
+rm -rf /var/www/html/storage
+ln -sf /tmp/storage /var/www/html/storage
+
+rm -rf /var/www/html/bootstrap/cache
+ln -sf /tmp/cache /var/www/html/bootstrap/cache
+
+# Criar arquivo SQLite em /tmp se estiver usando SQLite
 if [ "$DB_CONNECTION" = "sqlite" ]; then
-    if [ ! -f "/var/www/html/database/database.sqlite" ]; then
-        echo "📝 Criando arquivo SQLite..."
-        touch /var/www/html/database/database.sqlite
-        chmod 664 /var/www/html/database/database.sqlite
+    export DB_DATABASE="/tmp/database/database.sqlite"
+    if [ ! -f "$DB_DATABASE" ]; then
+        echo "📝 Criando arquivo SQLite em /tmp..."
+        touch "$DB_DATABASE"
+        chmod 666 "$DB_DATABASE"
+        chmod 777 /tmp/database
     fi
 fi
 
