@@ -46,9 +46,9 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
 
-# Executar migrations (descomente se necessário)
-# echo "📊 Executando migrations..."
-# php artisan migrate --force
+# Executar migrations automaticamente
+echo "📊 Executando migrations..."
+php artisan migrate --force --seed || echo "⚠️  Erro ao executar migrations/seeds, mas continuando..."
 
 # Criar storage link em /tmp/storage
 if [ ! -d "/tmp/storage/app/public" ]; then
