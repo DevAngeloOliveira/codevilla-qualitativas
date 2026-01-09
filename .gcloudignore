@@ -1,0 +1,44 @@
+# Ignorar arquivos desnecessários no Cloud Build
+.git
+.gitignore
+.github
+.vscode
+.idea
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# PHP
+vendor/
+.phpunit.result.cache
+
+# Laravel
+.env
+.env.backup
+.env.production
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
+public/hot
+
+# Testes
+tests/
+phpunit.xml
+
+# Documentação
+README.md
+CHECKLIST.md
+*.md
+
+# Docker local
+docker-compose.yml
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
