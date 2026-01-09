@@ -9,17 +9,15 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
+     * Simplificado para produção - apenas dados essenciais
      */
     public function run(): void
     {
-        $this->call([
-            UserSeeder::class,          // Usuários (desenvolvedor, coordenação, professor teste)
-            CriterioSeeder::class,      // Critérios de avaliação
-            DisciplinaSeeder::class,    // Disciplinas
-            TurmaSeeder::class,         // Turmas
-            AlunoSeeder::class,         // Alunos
-            ProfessorSeeder::class,     // Professores adicionais
-            AtribuicaoSeeder::class,    // Atribuições professor-disciplina-turma
-        ]);
+        // Em produção, seeders complexos não são necessários
+        // O usuário desenvolvedor já é criado automaticamente no docker-entrypoint.sh
+        // Dados de teste podem ser criados manualmente via interface
+        
+        $this->command->info('✅ Seeders não executados - dados devem ser criados via interface');
+        $this->command->info('👤 Usuário desenvolvedor já foi criado: dev@codevilla.com / Dev@2026');
     }
 }
