@@ -11,9 +11,13 @@ export PORT=${PORT:-8080}
 echo "📡 Usando porta: $PORT"
 
 # Substituir a porta no template do Nginx
+mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
 envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/sites-available/default
 ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 rm -f /etc/nginx/sites-enabled/default.dpkg-dist
+
+# Verificar se o nginx está configurado corretamente
+nginx -t || { echo "Erro na configuração do Nginx!"; cat /etc/nginx/sites-available/default; exit 1; }
 
 # Criar arquivo SQLite se estiver usando SQLite
 if [ "$DB_CONNECTION" = "sqlite" ]; then
