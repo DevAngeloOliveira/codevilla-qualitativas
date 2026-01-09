@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USER_ID: 1000
+        GROUP_ID: 1000
+    container_name: codevilla-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      # Otimizado para Windows - apenas arquivos essenciais
+      - ./.env:/var/www/html/.env:delegated
+      - ./app:/var/www/html/app:delegated
+      - ./config:/var/www/html/config:delegated
+      - ./database:/var/www/html/database:delegated
+      - ./routes:/var/www/html/routes:delegated
+      - ./resources:/var/www/html/resources:delegated
+      # Volumes nomeados para melhor performance
+      - storage-data:/var/www/html/storage
+      - cache-data:/var/www/html/bootstrap/cache
+      - vendor-data:/var/www/html/vendor
+      - node-modules-data:/var/www/html/node_modules
+      - public-build-data:/var/www/html/public/build
+    ports:
+      - "8000:80"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=http://localhost:8000
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/var/www/html/database/database.sqlite
+    networks:
+      - codevilla-network
+    depends_on:
+      - mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  mysql:
+    image: mysql:8.0
+    container_name: codevilla-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: codevilla_db
+      MYSQL_USER: codevilla_user
+      MYSQL_PASSWORD: codevilla_pass
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - codevilla-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: codevilla-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: codevilla_user
+      PMA_PASSWORD: codevilla_pass
+    ports:
+      - "8080:80"
+    networks:
+      - codevilla-network
+    depends_on:
+      - mysql
+
+networks:
+  codevilla-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+  storage-data:
+    driver: local
+  cache-data:
+    driver: local
+  vendor-data:
+    driver: local
+  node-modules-data:
+    driver: local
+  public-build-data:
+    driver: local
