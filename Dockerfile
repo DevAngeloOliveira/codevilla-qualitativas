@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     gettext-base \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instalar extensões PHP
+# Instalar extensões PHP (incluindo PostgreSQL)
 RUN docker-php-ext-install pdo pdo_sqlite pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip
 
 # Instalar Composer
