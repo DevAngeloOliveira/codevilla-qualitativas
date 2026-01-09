@@ -48,7 +48,12 @@ fi
 
 # Executar migrations automaticamente (SEM seeders para evitar timeout)
 echo "📊 Executando migrations..."
-php artisan migrate --force || echo "⚠️  Erro ao executar migrations, mas continuando..."
+# Usar migrate:fresh para PostgreSQL para evitar problemas com migrations anteriores
+if [ "$DB_CONNECTION" = "pgsql" ]; then
+    php artisan migrate:fresh --force || echo "⚠️  Erro ao executar migrations, mas continuando..."
+else
+    php artisan migrate --force || echo "⚠️  Erro ao executar migrations, mas continuando..."
+fi
 
 # Criar usuário desenvolvedor padrão se não existir
 echo "👤 Criando usuário desenvolvedor padrão..."
