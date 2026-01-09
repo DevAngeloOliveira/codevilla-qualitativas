@@ -16,8 +16,10 @@ class DatabaseSeeder extends Seeder
         // Em produção, seeders complexos não são necessários
         // O usuário desenvolvedor já é criado automaticamente no docker-entrypoint.sh
         // Dados de teste podem ser criados manualmente via interface
-        
-        $this->command->info('✅ Seeders não executados - dados devem ser criados via interface');
-        $this->command->info('👤 Usuário desenvolvedor já foi criado: dev@codevilla.com / Dev@2026');
+
+        if ($this->command) {
+            $this->command->info('✅ Seeders não executados - dados devem ser criados via interface');
+            $this->command->info('👤 Usuário desenvolvedor já foi criado: dev@codevilla.com / Dev@2026');
+        }
     }
 }
