@@ -70,7 +70,7 @@
 3. Configure o `.env`:
    ```env
    DB_CONNECTION=pgsql
-   DB_HOST=127.0.0.1
+   DB_HOST=db.tnbvzksyqrgxntpptbtt.supabase.co
    DB_PORT=5432
    DB_DATABASE=codevilla_qualitativas
    DB_USERNAME=postgres
