@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Turma;
+use App\Domains\Alunos\Models\Turma;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;

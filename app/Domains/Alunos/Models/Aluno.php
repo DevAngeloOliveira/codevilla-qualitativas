@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Domains\Alunos\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use App\Domains\Avaliacoes\Models\Avaliacao;
 
 class Aluno extends Model
 {

@@ -10,7 +10,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        /** @var \App\Models\User $professor */
+        /** @var \App\Domains\Usuarios\Models\User $professor */
         $professor = $request->user();
 
         $anoAtual = date('Y');

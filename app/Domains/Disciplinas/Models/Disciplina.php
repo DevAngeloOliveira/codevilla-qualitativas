@@ -1,10 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Domains\Disciplinas\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Domains\Alunos\Models\Turma;
+use App\Domains\Avaliacoes\Models\Avaliacao;
+use App\Domains\Usuarios\Models\User;
 
 class Disciplina extends Model
 {

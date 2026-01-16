@@ -58,8 +58,8 @@ fi
 # Criar usuário desenvolvedor padrão se não existir
 echo "👤 Criando usuário desenvolvedor padrão..."
 php artisan tinker --execute="
-if (!\App\Models\User::where('email', 'dev@codevilla.com')->exists()) {
-    \App\Models\User::create([
+if (!\App\Domains\Usuarios\Models\User::where('email', 'dev@codevilla.com')->exists()) {
+    \App\Domains\Usuarios\Models\User::create([
         'name' => 'Desenvolvedor',
         'email' => 'dev@codevilla.com',
         'password' => bcrypt('Dev@2026'),

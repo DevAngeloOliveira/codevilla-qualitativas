@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Domains\Usuarios\Models\User;
+use App\Domains\Usuarios\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -11,12 +12,16 @@ use Inertia\Inertia;
 
 class ProfessorController extends Controller
 {
+    public function __construct(private readonly UserService $userService)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = User::where('role', 'professor');
+        $query = $this->userService->query()->where('role', 'professor');
 
         // Busca
         if ($request->filled('search')) {
@@ -58,7 +63,7 @@ class ProfessorController extends Controller
         $validated['is_active'] = $validated['is_active'] ?? true;
         $validated['role'] = 'professor';
 
-        User::create($validated);
+        $this->userService->create($validated);
 
         return redirect()->route('admin.professores.index')
             ->with('success', 'Professor criado com sucesso!');
