@@ -266,7 +266,7 @@ cp .env.example .env
 php artisan key:generate
 
 # 5️⃣ Configure o banco de dados no arquivo .env
-DB_CONNECTION=mysql
+DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=codevilla_qualitativas
@@ -1129,8 +1129,8 @@ docker-compose logs -f
 # Acessar container da aplicação
 docker exec -it codevilla-app bash
 
-# Acessar MySQL
-docker exec -it codevilla-db mysql -u root -p
+# Acessar PostgreSQL
+docker exec -it codevilla-postgres psql -U postgres -d postgres
 
 # Rebuild containers
 docker-compose build --no-cache

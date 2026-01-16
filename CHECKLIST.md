@@ -60,41 +60,25 @@
 
 ### 1️⃣ Configurar Banco de Dados
 
-**Opção A: MySQL (Recomendado)**
+**PostgreSQL (Supabase ou local)**
 
-1. Inicie o MySQL (XAMPP ou serviço standalone)
-2. Crie o banco de dados:
+1. Inicie o PostgreSQL (Supabase ou serviço local)
+2. Crie o banco de dados se necessário:
    ```sql
-   CREATE DATABASE codevilla_qualitativas 
-   CHARACTER SET utf8mb4 
-   COLLATE utf8mb4_unicode_ci;
+   CREATE DATABASE codevilla_qualitativas;
    ```
 3. Configure o `.env`:
    ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
+   DB_CONNECTION=pgsql
+   DB_HOST=db.tnbvzksyqrgxntpptbtt.supabase.co
+   DB_PORT=5432
    DB_DATABASE=codevilla_qualitativas
-   DB_USERNAME=root
+   DB_USERNAME=postgres
    DB_PASSWORD=sua_senha
    ```
-
-**Opção B: SQLite (Desenvolvimento)**
-
-1. Habilite extensões no `php.ini`:
+4. Habilite extensões no `php.ini`:
    ```ini
-   extension=pdo_sqlite
-   extension=sqlite3
-   ```
-2. Reinicie o Apache/PHP
-3. Configure o `.env`:
-   ```env
-   DB_CONNECTION=sqlite
-   # Comente as outras linhas DB_*
-   ```
-4. Crie o arquivo:
-   ```bash
-   New-Item -ItemType File -Path "database\database.sqlite"
+   extension=pdo_pgsql
    ```
 
 ### 2️⃣ Executar Migrations
@@ -203,14 +187,13 @@ Antes de continuar, verifique:
 ### "could not find driver"
 **Solução:** Habilite extensões no `php.ini`:
 ```ini
-extension=pdo_mysql
-extension=pdo_sqlite
+extension=pdo_pgsql
 ```
 
 ### "Connection refused"
-**Solução:** Verifique se o MySQL está rodando:
+**Solução:** Verifique se o PostgreSQL está rodando:
 ```bash
-net start mysql
+net start postgresql
 ```
 
 ### "Class 'ZipArchive' not found"
