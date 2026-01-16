@@ -1,15 +1,23 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Card from '@/Components/Card.vue';
+import EmptyState from '@/Components/EmptyState.vue';
+import Pagination from '@/Components/Pagination.vue';
+import { useCrud } from '@/Composables/useCrud';
 
-defineProps({
+const props = defineProps({
     turmas: Object,
 });
 
+const { deleteResource } = useCrud();
+
 const deleteTurma = (turma) => {
-    if (confirm(`Tem certeza que deseja excluir a turma ${turma.nome}?`)) {
-        router.delete(route('admin.turmas.destroy', turma.uuid));
-    }
+    deleteResource(
+        'admin.turmas.destroy',
+        turma.uuid,
+        `Tem certeza que deseja excluir a turma ${turma.nome}?`
+    );
 };
 </script>
 
@@ -17,12 +25,13 @@ const deleteTurma = (turma) => {
     <Head title="Gerenciar Turmas" />
 
     <AuthenticatedLayout>
-        <div class="mb-6 flex items-center justify-between">
+        <!-- Header -->
+        <div class="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">Turmas</h1>
                 <p class="mt-1 text-sm text-gray-600">Gerencie as turmas do colégio</p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
                 <!-- Botões de Exportação -->
                 <a
                     :href="route('admin.turmas.export.pdf')"
@@ -52,29 +61,34 @@ const deleteTurma = (turma) => {
             </div>
         </div>
 
-        <div v-if="turmas.data.length === 0" class="empty-state">
-                <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                <p>Nenhuma turma cadastrada.</p>
+        <!-- Empty State -->
+        <EmptyState
+            v-if="turmas.data.length === 0"
+            title="Nenhuma turma cadastrada"
+            description="Comece criando sua primeira turma para organizar os alunos"
+            icon="folder"
+        >
+            <template #action>
                 <Link :href="route('admin.turmas.create')" class="btn btn-primary mt-4">
                     Criar Primeira Turma
                 </Link>
-            </div>
+            </template>
+        </EmptyState>
 
-            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div
+        <!-- Grid de Turmas -->
+        <div v-else>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards de Turma usando componente Card -->
+                <Card
                     v-for="turma in turmas.data"
                     :key="turma.id"
-                    class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-codevilla-border"
                 >
-                    <!-- Header do Card -->
-                    <div class="bg-gradient-to-r from-codevilla-primary to-codevilla-accent p-4">
+                    <template #header>
                         <div class="flex justify-between items-start">
                             <div>
                                 <h3 class="font-bold text-xl text-white mb-1">
                                     {{ turma.nome }}
-                                </h3>
+                </h3>
                                 <p class="text-white/80 text-sm">
                                     Ano Letivo {{ turma.ano_letivo }}
                                 </p>
@@ -92,52 +106,52 @@ const deleteTurma = (turma) => {
                                 Inativa
                             </span>
                         </div>
-                    </div>
+                    </template>
 
                     <!-- Corpo do Card -->
-                    <div class="p-5">
-                        <div class="space-y-3 mb-5">
-                            <!-- Turno -->
-                            <div class="flex items-center justify-between p-3 bg-codevilla-bg rounded-lg">
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-codevilla-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span class="text-sm text-codevilla-muted font-medium">Turno</span>
-                                </div>
-                                <span
-                                    :class="turma.turno === 'Matutino'
-                                        ? 'bg-yellow-100 text-yellow-800 border-yellow-300'
-                                        : 'bg-blue-100 text-blue-800 border-blue-300'"
-                                    class="text-xs font-semibold px-3 py-1 rounded-full border"
-                                >
-                                    {{ turma.turno }}
-                                </span>
-                            </div>
-
-                            <!-- Alunos -->
-                            <div class="flex items-center justify-between p-3 bg-codevilla-bg rounded-lg">
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-codevilla-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                    </svg>
-                                    <span class="text-sm text-codevilla-muted font-medium">Alunos</span>
-                                </div>
-                                <span class="text-lg font-bold text-codevilla-primary">
-                                    {{ turma.alunos_count || 0 }}
-                                </span>
-                            </div>
-
-                            <!-- Segmento -->
-                            <div class="flex items-center p-3 bg-codevilla-bg rounded-lg">
-                                <svg class="w-5 h-5 mr-2 text-codevilla-accent flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    <div class="space-y-3 mb-5">
+                        <!-- Turno -->
+                        <div class="flex items-center justify-between p-3 bg-codevilla-bg rounded-lg">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-codevilla-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span class="text-xs text-codevilla-muted">{{ turma.segmento }}</span>
+                                <span class="text-sm text-codevilla-muted font-medium">Turno</span>
                             </div>
+                            <span
+                                :class="turma.turno === 'Matutino'
+                                    ? 'bg-yellow-100 text-yellow-800 border-yellow-300'
+                                    : 'bg-blue-100 text-blue-800 border-blue-300'"
+                                class="text-xs font-semibold px-3 py-1 rounded-full border"
+                            >
+                                {{ turma.turno }}
+                            </span>
                         </div>
 
-                        <!-- Botões de Ação -->
+                        <!-- Alunos -->
+                        <div class="flex items-center justify-between p-3 bg-codevilla-bg rounded-lg">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-codevilla-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                                <span class="text-sm text-codevilla-muted font-medium">Alunos</span>
+                            </div>
+                            <span class="text-lg font-bold text-codevilla-primary">
+                                {{ turma.alunos_count || 0 }}
+                            </span>
+                        </div>
+
+                        <!-- Segmento -->
+                        <div class="flex items-center p-3 bg-codevilla-bg rounded-lg">
+                            <svg class="w-5 h-5 mr-2 text-codevilla-accent flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            <span class="text-xs text-codevilla-muted">{{ turma.segmento }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Footer com Botões -->
+                    <template #footer>
                         <div class="flex gap-2">
                             <Link
                                 :href="route('admin.turmas.detalhes', turma.uuid)"
@@ -167,28 +181,17 @@ const deleteTurma = (turma) => {
                                 </svg>
                             </button>
                         </div>
-                    </div>
-                </div>
+                    </template>
+                </Card>
             </div>
 
             <!-- Paginação -->
-            <div v-if="turmas.links && turmas.links.length > 3" class="mt-6">
-                <div class="flex justify-center gap-2">
-                    <Link
-                        v-for="(link, index) in turmas.links"
-                        :key="index"
-                        :href="link.url"
-                        v-html="link.label"
-                        :class="[
-                            'px-4 py-2 rounded-lg text-sm font-medium transition',
-                            link.active
-                                ? 'bg-codevilla-primary text-white'
-                                : link.url
-                                ? 'bg-white text-codevilla-text border border-codevilla-border hover:bg-codevilla-bg'
-                                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        ]"
-                    />
-                </div>
-            </div>
+            <Pagination
+                v-if="turmas.links && turmas.links.length > 3"
+                :data="turmas"
+                route-name="admin.turmas.index"
+                class="mt-6"
+            />
+        </div>
     </AuthenticatedLayout>
 </template>

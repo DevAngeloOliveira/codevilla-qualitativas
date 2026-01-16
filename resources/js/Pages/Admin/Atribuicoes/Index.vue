@@ -1,135 +1,108 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import DataTable from '@/Components/DataTable.vue';
+import EmptyState from '@/Components/EmptyState.vue';
+import Pagination from '@/Components/Pagination.vue';
+import { useCrud } from '@/Composables/useCrud';
+import { AcademicCapIcon, TrashIcon } from '@heroicons/vue/24/outline';
 
 defineProps({
     atribuicoes: Object,
 });
 
+const { deleteResource } = useCrud();
+
 const deleteAtribuicao = (atribuicao) => {
-    if (confirm(`Deseja remover a atribuição de ${atribuicao.professor_nome}?`)) {
-        router.delete(route('admin.atribuicoes.destroy', atribuicao.id));
-    }
+    deleteResource(
+        'admin.atribuicoes.destroy',
+        atribuicao.id,
+        `Deseja remover a atribuição de ${atribuicao.professor_nome}?`
+    );
 };
+
+const tableColumns = [
+    { key: 'professor_nome', label: 'Professor' },
+    { key: 'turma_nome', label: 'Turma' },
+    { key: 'turma_turno', label: 'Turno' },
+    { key: 'disciplina_nome', label: 'Disciplina' },
+    { key: 'ano_letivo', label: 'Ano Letivo' },
+];
 </script>
 
 <template>
     <Head title="Atribuições de Professores" />
 
     <AuthenticatedLayout>
-        <div class="container">
-            <div class="page-header">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h1>Atribuições de Professores</h1>
-                        <p>Gerencie as atribuições de professores às turmas e disciplinas</p>
-                    </div>
-                    <Link :href="route('admin.atribuicoes.create')" class="btn btn-primary">
-                        Nova Atribuição
-                    </Link>
-                </div>
-            </div>
-
-            <div v-if="atribuicoes.data.length === 0" class="empty-state">
-                <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-                <p>Nenhuma atribuição cadastrada.</p>
-                <Link :href="route('admin.atribuicoes.create')" class="btn btn-primary mt-4">
-                    Criar Primeira Atribuição
-                </Link>
-            </div>
-
-            <div v-else class="card">
-                <h2 class="card-title">Lista de Atribuições</h2>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b border-codevilla-border">
-                                <th class="text-left py-3 px-4 text-sm font-semibold text-codevilla-text">
-                                    Professor
-                                </th>
-                                <th class="text-left py-3 px-4 text-sm font-semibold text-codevilla-text">
-                                    Turma
-                                </th>
-                                <th class="text-left py-3 px-4 text-sm font-semibold text-codevilla-text">
-                                    Turno
-                                </th>
-                                <th class="text-left py-3 px-4 text-sm font-semibold text-codevilla-text">
-                                    Disciplina
-                                </th>
-                                <th class="text-left py-3 px-4 text-sm font-semibold text-codevilla-text">
-                                    Ano Letivo
-                                </th>
-                                <th class="text-right py-3 px-4 text-sm font-semibold text-codevilla-text">
-                                    Ações
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                v-for="atribuicao in atribuicoes.data"
-                                :key="atribuicao.id"
-                                class="border-b border-codevilla-border hover:bg-codevilla-bg transition"
+        <div class="py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Header -->
+                <div class="mb-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h1 class="text-3xl font-bold text-codevilla-text">Atribuições de Professores</h1>
+                            <p class="mt-1 text-sm text-codevilla-muted">Gerencie as atribuições de professores às turmas e disciplinas</p>
+                        </div>
+                        <div class="mt-4 sm:mt-0">
+                            <Link
+                                :href="route('admin.atribuicoes.create')"
+                                class="inline-flex items-center px-4 py-2 bg-codevilla-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-codevilla-accent focus:outline-none focus:ring-2 focus:ring-codevilla-accent focus:ring-offset-2 transition"
                             >
-                                <td class="py-3 px-4">
-                                    <span class="font-medium text-codevilla-text">
-                                        {{ atribuicao.professor_nome }}
-                                    </span>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <span class="text-codevilla-text">
-                                        {{ atribuicao.turma_nome }}
-                                    </span>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <span class="badge badge-blue">
-                                        {{ atribuicao.turma_turno }}
-                                    </span>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <span class="text-codevilla-text">
-                                        {{ atribuicao.disciplina_nome }}
-                                    </span>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <span class="text-codevilla-muted text-sm">
-                                        {{ atribuicao.ano_letivo }}
-                                    </span>
-                                </td>
-                                <td class="py-3 px-4 text-right">
-                                    <button
-                                        @click="deleteAtribuicao(atribuicao)"
-                                        class="btn btn-sm text-white bg-red-600 hover:bg-red-700"
-                                    >
-                                        Remover
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Paginação -->
-                <div v-if="atribuicoes.links && atribuicoes.links.length > 3" class="mt-6">
-                    <div class="flex justify-center gap-2">
-                        <Link
-                            v-for="(link, index) in atribuicoes.links"
-                            :key="index"
-                            :href="link.url"
-                            v-html="link.label"
-                            :class="[
-                                'px-4 py-2 rounded-lg text-sm font-medium transition',
-                                link.active
-                                    ? 'bg-codevilla-primary text-white'
-                                    : link.url
-                                    ? 'bg-white text-codevilla-text border border-codevilla-border hover:bg-codevilla-bg'
-                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            ]"
-                        />
+                                <AcademicCapIcon class="w-5 h-5 mr-2" />
+                                Nova Atribuição
+                            </Link>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Tabela -->
+                <div v-if="atribuicoes.data.length > 0" class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <DataTable :columns="tableColumns" :data="atribuicoes.data">
+                        <template #cell-turma_turno="{ row }">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ row.turma_turno }}
+                            </span>
+                        </template>
+                        <template #cell-ano_letivo="{ row }">
+                            <span class="text-sm text-codevilla-muted">
+                                {{ row.ano_letivo }}
+                            </span>
+                        </template>
+                        <template #actions="{ row }">
+                            <div class="flex items-center justify-end space-x-2">
+                                <button
+                                    @click="deleteAtribuicao(row)"
+                                    class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-xs font-medium"
+                                >
+                                    <TrashIcon class="w-4 h-4 mr-1" />
+                                    Remover
+                                </button>
+                            </div>
+                        </template>
+                    </DataTable>
+
+                    <div class="px-6 py-4 border-t border-gray-200">
+                        <Pagination :data="atribuicoes" route-name="admin.atribuicoes.index" />
+                    </div>
+                </div>
+
+                <!-- Estado Vazio -->
+                <EmptyState
+                    v-else
+                    icon="users"
+                    title="Nenhuma atribuição cadastrada"
+                    description="Comece criando a primeira atribuição de professor."
+                >
+                    <template #action>
+                        <Link
+                            :href="route('admin.atribuicoes.create')"
+                            class="inline-flex items-center px-4 py-2 bg-codevilla-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-codevilla-accent focus:outline-none focus:ring-2 focus:ring-codevilla-accent focus:ring-offset-2 transition"
+                        >
+                            <AcademicCapIcon class="w-5 h-5 mr-2" />
+                            Criar Primeira Atribuição
+                        </Link>
+                    </template>
+                </EmptyState>
             </div>
         </div>
     </AuthenticatedLayout>
