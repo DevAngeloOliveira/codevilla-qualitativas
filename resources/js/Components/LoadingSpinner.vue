@@ -4,7 +4,7 @@
             <!-- Spinner -->
             <div class="inline-flex items-center justify-center w-16 h-16 mb-4">
                 <svg
-                    class="animate-spin h-16 w-16 text-codevilla-primary"
+                    class="w-16 h-16 animate-spin text-codevilla-primary"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -29,7 +29,7 @@
             <p class="text-lg font-semibold text-codevilla-text">
                 {{ message }}
             </p>
-            <p v-if="submessage" class="text-sm text-codevilla-muted mt-2">
+            <p v-if="submessage" class="mt-2 text-sm text-codevilla-muted">
                 {{ submessage }}
             </p>
         </div>

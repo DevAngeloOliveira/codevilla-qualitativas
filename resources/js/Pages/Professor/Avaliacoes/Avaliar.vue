@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Card from '@/Components/Card.vue';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
@@ -78,9 +79,9 @@ const getValorLabel = (valor) => {
     <Head :title="`Avaliar ${aluno?.nome || 'Aluno'}`" />
 
     <AuthenticatedLayout>
-        <div class="container">
-            <div class="page-header">
-                <div>
+        <div class="py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-6">
                     <Link
                         v-if="aluno?.turma?.uuid && disciplina?.id && trimestre"
                         :href="route('professor.avaliacoes.alunos', {
@@ -92,77 +93,75 @@ const getValorLabel = (valor) => {
                     >
                         ← Voltar para lista de alunos
                     </Link>
-                    <h1>Avaliar Aluno</h1>
-                    <p>{{ aluno?.turma?.nome || '-' }} - {{ disciplina?.nome || '-' }} - {{ trimestre }}º Trimestre</p>
+                    <h1 class="text-3xl font-bold text-codevilla-text">Avaliar Aluno</h1>
+                    <p class="mt-2 text-codevilla-muted">{{ aluno?.turma?.nome || '-' }} - {{ disciplina?.nome || '-' }} - {{ trimestre }}º Trimestre</p>
                 </div>
-            </div>
 
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
-                <!-- Sidebar com info do aluno -->
-                <div class="lg:col-span-1">
-                    <div class="sticky card top-4">
-                        <div class="mb-4 text-center">
-                            <img
-                                :src="aluno.foto_url || '/assets/images/placeholder-icon.png'"
-                                :alt="aluno?.nome || 'Aluno'"
-                                class="object-cover w-32 h-32 mx-auto border-4 rounded-full border-codevilla-border"
-                            />
-                        </div>
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
+                    <!-- Sidebar com info do aluno -->
+                    <div class="lg:col-span-1">
+                        <Card class="sticky top-4">
+                            <div class="mb-4 text-center">
+                                <img
+                                    :src="aluno.foto_url || '/assets/images/placeholder-icon.png'"
+                                    :alt="aluno?.nome || 'Aluno'"
+                                    class="object-cover w-32 h-32 mx-auto border-4 rounded-full border-codevilla-border"
+                                />
+                            </div>
 
-                        <h3 class="mb-2 font-semibold text-center text-codevilla-text">
-                            {{ aluno?.nome || '-' }}
-                        </h3>
+                            <h3 class="mb-2 font-semibold text-center text-codevilla-text">
+                                {{ aluno?.nome || '-' }}
+                            </h3>
 
-                        <p class="mb-4 text-sm text-center text-codevilla-muted">
-                            Nº {{ aluno?.numero_chamada ?? '-' }}
-                        </p>
-
-                        <div class="p-4 text-center rounded-lg bg-codevilla-bg">
-                            <p class="mb-1 text-sm text-codevilla-muted">Nota Final</p>
-                            <p class="text-3xl font-bold text-codevilla-primary">
-                                {{ notaFinal }}
+                            <p class="mb-4 text-sm text-center text-codevilla-muted">
+                                Nº {{ aluno?.numero_chamada ?? '-' }}
                             </p>
-                        </div>
 
-                        <!-- Navegação entre alunos -->
-                        <div class="mt-6 space-y-2">
-                            <Link
-                                v-if="alunoAnterior && disciplina?.id"
-                                :href="route('professor.avaliacoes.avaliar', {
-                                    aluno: alunoAnterior.uuid,
-                                    disciplina: disciplina.id,
-                                    trimestre: trimestre,
-                                })"
-                                class="block w-full text-sm text-left btn btn-secondary"
-                            >
-                                <span class="block">← Anterior</span>
-                                <span class="block mt-1 text-xs">{{ alunoAnterior.nome }}</span>
-                            </Link>
+                            <div class="p-4 text-center rounded-lg bg-codevilla-bg">
+                                <p class="mb-1 text-sm text-codevilla-muted">Nota Final</p>
+                                <p class="text-3xl font-bold text-codevilla-primary">
+                                    {{ notaFinal }}
+                                </p>
+                            </div>
 
-                            <Link
-                                v-if="proximoAluno && disciplina?.id"
-                                :href="route('professor.avaliacoes.avaliar', {
-                                    aluno: proximoAluno.uuid,
-                                    disciplina: disciplina.id,
-                                    trimestre: trimestre,
-                                })"
-                                class="block w-full text-sm text-left btn btn-secondary"
-                            >
-                                <span class="block">Próximo →</span>
-                                <span class="block mt-1 text-xs">{{ proximoAluno.nome }}</span>
-                            </Link>
-                        </div>
+                            <!-- Navegação entre alunos -->
+                            <div class="mt-6 space-y-2">
+                                <Link
+                                    v-if="alunoAnterior && disciplina?.id"
+                                    :href="route('professor.avaliacoes.avaliar', {
+                                        aluno: alunoAnterior.uuid,
+                                        disciplina: disciplina.id,
+                                        trimestre: trimestre,
+                                    })"
+                                    class="block w-full px-4 py-3 text-sm text-left rounded-lg border-2 border-gray-300 hover:border-codevilla-accent transition"
+                                >
+                                    <span class="block text-codevilla-text">← Anterior</span>
+                                    <span class="block mt-1 text-xs text-codevilla-muted">{{ alunoAnterior.nome }}</span>
+                                </Link>
+
+                                <Link
+                                    v-if="proximoAluno && disciplina?.id"
+                                    :href="route('professor.avaliacoes.avaliar', {
+                                        aluno: proximoAluno.uuid,
+                                        disciplina: disciplina.id,
+                                        trimestre: trimestre,
+                                    })"
+                                    class="block w-full px-4 py-3 text-sm text-left rounded-lg border-2 border-gray-300 hover:border-codevilla-accent transition"
+                                >
+                                    <span class="block text-codevilla-text">Próximo →</span>
+                                    <span class="block mt-1 text-xs text-codevilla-muted">{{ proximoAluno.nome }}</span>
+                                </Link>
+                            </div>
+                        </Card>
                     </div>
-                </div>
 
-                <!-- Formulário de avaliação -->
-                <div class="lg:col-span-3">
-                    <form @submit.prevent="salvarAvaliacao">
-                        <div class="card animate-in fade-in duration-300">
-                            <h2 class="card-title">Critérios de Avaliação</h2>
-                            <p class="mb-6 text-sm text-codevilla-muted">
-                                Avalie cada critério de 0 a 4. A nota final será calculada automaticamente.
-                            </p>
+                    <!-- Formulário de avaliação -->
+                    <div class="lg:col-span-3">
+                        <form @submit.prevent="salvarAvaliacao">
+                            <Card title="Critérios de Avaliação">
+                                <p class="mb-6 text-sm text-codevilla-muted">
+                                    Avalie cada critério de 0 a 4. A nota final será calculada automaticamente.
+                                </p>
 
                             <div class="space-y-6">
                                 <div
@@ -223,33 +222,34 @@ const getValorLabel = (valor) => {
                                 </div>
                             </div>
 
-                            <div v-if="form.errors" class="mt-4">
-                                <div v-for="(error, key) in form.errors" :key="key" class="text-sm text-red-600">
-                                    {{ error }}
+                                <div v-if="form.errors" class="mt-4">
+                                    <div v-for="(error, key) in form.errors" :key="key" class="text-sm text-red-600">
+                                        {{ error }}
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="flex justify-end gap-3 mt-6">
-                                <Link
-                                    :href="route('professor.avaliacoes.alunos', {
-                                        turma: aluno.turma.uuid,
-                                        disciplina: disciplina.id,
-                                        trimestre: trimestre,
-                                    })"
-                                    class="btn btn-secondary"
-                                >
-                                    Cancelar
-                                </Link>
-                                <button
-                                    type="submit"
-                                    class="btn btn-primary"
-                                    :disabled="form.processing"
-                                >
-                                    {{ form.processing ? 'Salvando...' : 'Salvar Avaliação' }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                                <div class="flex justify-end gap-3 mt-6">
+                                    <Link
+                                        :href="route('professor.avaliacoes.alunos', {
+                                            turma: aluno.turma.uuid,
+                                            disciplina: disciplina.id,
+                                            trimestre: trimestre,
+                                        })"
+                                        class="px-4 py-2 border-2 border-gray-300 rounded-lg hover:border-codevilla-accent transition"
+                                    >
+                                        Cancelar
+                                    </Link>
+                                    <button
+                                        type="submit"
+                                        class="px-4 py-2 bg-codevilla-accent text-white rounded-lg hover:bg-codevilla-primary transition disabled:opacity-50"
+                                        :disabled="form.processing"
+                                    >
+                                        {{ form.processing ? 'Salvando...' : 'Salvar Avaliação' }}
+                                    </button>
+                                </div>
+                            </Card>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
