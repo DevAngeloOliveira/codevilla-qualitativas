@@ -263,7 +263,7 @@ const hasActiveFilters = () => {
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <img
-                                            :src="aluno.foto_url"
+                                            :src="aluno.foto_url || '/assets/images/placeholder-icon.png'"
                                             :alt="aluno.nome"
                                             class="object-cover w-10 h-10 border-2 border-gray-200 rounded-full"
                                         />

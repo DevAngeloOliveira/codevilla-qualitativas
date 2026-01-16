@@ -5,8 +5,8 @@ import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 
 defineProps({
-    turmas: Array,
-    disciplinas: Array,
+    turmas: { type: Array, default: () => [] },
+    disciplinas: { type: Array, default: () => [] },
 });
 
 const turmaSelecionada = ref('');
@@ -37,7 +37,7 @@ const iniciarAvaliacao = () => {
                 <p>Selecione a turma, disciplina e trimestre para avaliar os alunos</p>
             </div>
 
-            <div class="card" style="max-width: 700px; margin: 0 auto;">
+            <div class="card animate-in fade-in duration-300" style="max-width: 700px; margin: 0 auto;">
                 <h2 class="card-title">Iniciar Avaliação</h2>
 
                 <div class="space-y-4">
@@ -82,19 +82,19 @@ const iniciarAvaliacao = () => {
             <div class="mt-8">
                 <h2 class="text-xl font-semibold text-codevilla-text mb-4">Como funciona a avaliação?</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="card">
+                    <div class="card animate-in fade-in duration-300">
                         <h3 class="font-semibold text-codevilla-primary mb-2">1. Selecione</h3>
                         <p class="text-sm text-codevilla-muted">
                             Escolha a turma, disciplina e trimestre que deseja avaliar
                         </p>
                     </div>
-                    <div class="card">
+                    <div class="card animate-in fade-in duration-300">
                         <h3 class="font-semibold text-codevilla-primary mb-2">2. Avalie</h3>
                         <p class="text-sm text-codevilla-muted">
                             Para cada aluno, avalie os 12 critérios qualitativos de 0 a 4
                         </p>
                     </div>
-                    <div class="card">
+                    <div class="card animate-in fade-in duration-300">
                         <h3 class="font-semibold text-codevilla-primary mb-2">3. Nota Automática</h3>
                         <p class="text-sm text-codevilla-muted">
                             A nota final é calculada automaticamente com base nos critérios

@@ -222,7 +222,7 @@ const getRoleLabel = (role) => {
             </div>
 
             <!-- Page Content -->
-            <main class="py-6 lg:py-8">
+            <main class="py-6 lg:py-8 animate-in fade-in duration-300">
                 <div class="px-4 sm:px-6 lg:px-8">
                     <slot />
                 </div>

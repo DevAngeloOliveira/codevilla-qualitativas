@@ -47,7 +47,7 @@
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                             <div class="flex flex-col items-center">
                                 <img
-                                    :src="aluno.foto_url"
+                                    :src="aluno.foto_url || '/assets/images/placeholder-icon.png'"
                                     :alt="aluno.nome"
                                     class="w-32 h-32 rounded-full object-cover border-4 border-indigo-100 mb-4"
                                 />

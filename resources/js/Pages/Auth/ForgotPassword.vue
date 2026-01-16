@@ -36,7 +36,7 @@ const submit = () => {
 
         <!-- Forgot Password Card -->
         <div class="flex-1 flex items-center justify-center py-12">
-            <div class="login-card" style="max-width: 480px;">
+            <div class="login-card animate-in fade-in duration-300" style="max-width: 480px;">
                 <img src="/assets/images/logo-codevilla.png" class="logo-large" alt="Colégio Codevilla" />
 
                 <h2 class="text-2xl font-bold text-codevilla-primary mb-2">Recuperar Senha</h2>

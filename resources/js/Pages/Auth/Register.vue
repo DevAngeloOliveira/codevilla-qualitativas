@@ -35,7 +35,7 @@ const submit = () => {
 
         <!-- Register Card -->
         <div class="flex-1 flex items-center justify-center py-12">
-            <div class="login-card">
+            <div class="login-card animate-in fade-in duration-300">
                 <img src="/assets/images/logo-codevilla.png" class="logo-large" alt="Colégio Codevilla" />
 
                 <h2 class="text-2xl font-bold text-codevilla-primary mb-2">Criar Conta</h2>

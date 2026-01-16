@@ -42,7 +42,7 @@ defineProps({
         </div>
 
         <!-- Hero Section -->
-        <div class="container py-16">
+        <div class="container py-16 animate-in fade-in duration-300">
             <div class="text-center mb-12">
                 <img src="/assets/images/logo-codevilla.png" class="logo-large mx-auto" alt="Colégio Codevilla" />
                 <h2 class="text-4xl font-bold text-codevilla-primary mb-4">
@@ -55,7 +55,7 @@ defineProps({
             </div>
 
             <!-- Features Grid -->
-            <div class="grid-2 grid lg:grid-cols-3 mb-12">
+            <div class="grid-2 grid lg:grid-cols-3 mb-12 animate-in fade-in duration-500">
                 <div class="card text-center">
                     <div class="flex justify-center mb-4">
                         <div class="bg-blue-100 p-4 rounded-full">
@@ -100,7 +100,7 @@ defineProps({
             </div>
 
             <!-- CTA Section -->
-            <div class="card card-info text-center">
+            <div class="card card-info text-center animate-in fade-in duration-500">
                 <h3 class="text-2xl font-bold text-codevilla-primary mb-4">
                     Pronto para começar?
                 </h3>

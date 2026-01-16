@@ -132,7 +132,7 @@
                                         <span class="text-sm font-semibold text-gray-900">{{ aluno.numero_chamada }}</span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <img :src="aluno.foto_url" :alt="aluno.nome" class="w-10 h-10 rounded-full object-cover" />
+                                        <img :src="aluno.foto_url || '/assets/images/placeholder-icon.png'" :alt="aluno.nome" class="w-10 h-10 rounded-full object-cover" />
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="text-sm font-medium text-gray-900">{{ aluno.nome }}</div>

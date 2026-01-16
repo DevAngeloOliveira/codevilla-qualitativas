@@ -3,15 +3,15 @@ import { Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 defineProps({
-    turma: Object,
-    disciplina: Object,
-    trimestre: String,
-    alunos: Array,
+    turma: { type: Object, default: () => ({}) },
+    disciplina: { type: Object, default: () => ({}) },
+    trimestre: { type: String, default: '' },
+    alunos: { type: Array, default: () => [] },
 });
 </script>
 
 <template>
-    <Head :title="`Avaliar ${turma.nome} - ${disciplina.nome}`" />
+    <Head :title="`Avaliar ${turma?.nome || 'Turma'} - ${disciplina?.nome || 'Disciplina'}`" />
 
     <AuthenticatedLayout>
         <div class="container">
@@ -20,7 +20,7 @@ defineProps({
                     <Link :href="route('professor.avaliacoes.index')" class="inline-block mb-2 text-codevilla-accent hover:underline">
                         ← Voltar para seleção
                     </Link>
-                    <h1>{{ turma.nome }} - {{ disciplina.nome }}</h1>
+                    <h1>{{ turma?.nome || '-' }} - {{ disciplina?.nome || '-' }}</h1>
                     <p>{{ trimestre }}º Trimestre - Selecione um aluno para avaliar</p>
                 </div>
             </div>
@@ -44,11 +44,11 @@ defineProps({
                         disciplina: disciplina.id,
                         trimestre: trimestre,
                     })"
-                    class="text-center card card-hover"
+                    class="text-center card card-hover animate-in fade-in duration-300"
                 >
                     <div class="mb-4">
                         <img
-                            :src="aluno.foto_url"
+                            :src="aluno.foto_url || '/assets/images/placeholder-icon.png'"
                             :alt="aluno.nome"
                             class="object-cover w-32 h-32 mx-auto border-4 rounded-full border-codevilla-border"
                         />

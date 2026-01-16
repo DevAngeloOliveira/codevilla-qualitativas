@@ -4,14 +4,14 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
-    aluno: Object,
-    disciplina: Object,
-    trimestre: String,
-    criterios: Array,
-    avaliacao: Object,
-    valoresCriterios: Object,
-    alunoAnterior: Object,
-    proximoAluno: Object,
+    aluno: { type: Object, default: () => ({}) },
+    disciplina: { type: Object, default: () => ({}) },
+    trimestre: { type: String, default: '' },
+    criterios: { type: Array, default: () => [] },
+    avaliacao: { type: Object, default: () => ({}) },
+    valoresCriterios: { type: Object, default: () => ({}) },
+    alunoAnterior: { type: Object, default: null },
+    proximoAluno: { type: Object, default: null },
 });
 
 // Inicializar valores dos critérios
@@ -21,8 +21,8 @@ props.criterios.forEach(criterio => {
 });
 
 const form = useForm({
-    aluno_id: props.aluno.id,
-    disciplina_id: props.disciplina.id,
+    aluno_id: props.aluno?.id,
+    disciplina_id: props.disciplina?.id,
     trimestre: props.trimestre,
     criterios: criteriosValores.value,
     observacoes: props.avaliacao?.observacoes ?? '',
@@ -75,7 +75,7 @@ const getValorLabel = (valor) => {
 </script>
 
 <template>
-    <Head :title="`Avaliar ${aluno.nome}`" />
+    <Head :title="`Avaliar ${aluno?.nome || 'Aluno'}`" />
 
     <AuthenticatedLayout>
         <div class="container">
@@ -93,7 +93,7 @@ const getValorLabel = (valor) => {
                         ← Voltar para lista de alunos
                     </Link>
                     <h1>Avaliar Aluno</h1>
-                    <p>{{ aluno.turma.nome }} - {{ disciplina.nome }} - {{ trimestre }}º Trimestre</p>
+                    <p>{{ aluno?.turma?.nome || '-' }} - {{ disciplina?.nome || '-' }} - {{ trimestre }}º Trimestre</p>
                 </div>
             </div>
 
@@ -103,18 +103,18 @@ const getValorLabel = (valor) => {
                     <div class="sticky card top-4">
                         <div class="mb-4 text-center">
                             <img
-                                :src="aluno.foto_url"
-                                :alt="aluno.nome"
+                                :src="aluno.foto_url || '/assets/images/placeholder-icon.png'"
+                                :alt="aluno?.nome || 'Aluno'"
                                 class="object-cover w-32 h-32 mx-auto border-4 rounded-full border-codevilla-border"
                             />
                         </div>
 
                         <h3 class="mb-2 font-semibold text-center text-codevilla-text">
-                            {{ aluno.nome }}
+                            {{ aluno?.nome || '-' }}
                         </h3>
 
                         <p class="mb-4 text-sm text-center text-codevilla-muted">
-                            Nº {{ aluno.numero_chamada }}
+                            Nº {{ aluno?.numero_chamada ?? '-' }}
                         </p>
 
                         <div class="p-4 text-center rounded-lg bg-codevilla-bg">
@@ -158,7 +158,7 @@ const getValorLabel = (valor) => {
                 <!-- Formulário de avaliação -->
                 <div class="lg:col-span-3">
                     <form @submit.prevent="salvarAvaliacao">
-                        <div class="card">
+                        <div class="card animate-in fade-in duration-300">
                             <h2 class="card-title">Critérios de Avaliação</h2>
                             <p class="mb-6 text-sm text-codevilla-muted">
                                 Avalie cada critério de 0 a 4. A nota final será calculada automaticamente.
@@ -168,7 +168,7 @@ const getValorLabel = (valor) => {
                                 <div
                                     v-for="criterio in criterios"
                                     :key="criterio.id"
-                                    class="p-5 bg-white border border-gray-200 rounded-lg"
+                                    class="p-5 bg-white border border-gray-200 rounded-lg shadow-sm"
                                 >
                                     <div class="mb-4">
                                         <h3 class="mb-1 text-base font-semibold text-codevilla-text">
@@ -232,7 +232,7 @@ const getValorLabel = (valor) => {
                             <div class="flex justify-end gap-3 mt-6">
                                 <Link
                                     :href="route('professor.avaliacoes.alunos', {
-                                        turma: aluno.turma.id,
+                                        turma: aluno.turma.uuid,
                                         disciplina: disciplina.id,
                                         trimestre: trimestre,
                                     })"
