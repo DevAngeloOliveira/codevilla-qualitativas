@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Disciplina;
+use App\Domains\Disciplinas\Models\Disciplina;
+use App\Domains\Disciplinas\Services\DisciplinaService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -11,12 +12,16 @@ use Inertia\Inertia;
 
 class DisciplinaController extends Controller
 {
+    public function __construct(private readonly DisciplinaService $disciplinaService)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = Disciplina::query();
+        $query = $this->disciplinaService->query();
 
         // Busca
         if ($request->filled('search')) {
@@ -48,7 +53,7 @@ class DisciplinaController extends Controller
             'nome' => 'required|string|max:255|unique:disciplinas,nome',
         ]);
 
-        Disciplina::create($validated);
+        $this->disciplinaService->query()->create($validated);
 
         return redirect()->route('admin.disciplinas.index')
             ->with('success', 'Disciplina criada com sucesso!');

@@ -1,11 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App\Domains\Alunos\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use App\Domains\Avaliacoes\Models\Avaliacao;
+use App\Domains\Disciplinas\Models\Disciplina;
+use App\Domains\Usuarios\Models\User;
 
 class Turma extends Model
 {

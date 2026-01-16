@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\TurmaController;
 use App\Http\Controllers\Professor\AvaliacaoController;
 use App\Http\Controllers\Professor\DashboardController as ProfessorDashboardController;
 use App\Http\Controllers\ProfileController;
-use App\Models\User;
+use App\Domains\Usuarios\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;

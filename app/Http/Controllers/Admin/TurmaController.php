@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Aluno;
-use App\Models\Turma;
+use App\Domains\Alunos\Models\Aluno;
+use App\Domains\Alunos\Models\Turma;
+use App\Domains\Alunos\Services\AlunoService;
+use App\Domains\Alunos\Services\TurmaService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,12 +15,18 @@ use App\Exports\TurmasExport;
 
 class TurmaController extends Controller
 {
+    public function __construct(
+        private readonly TurmaService $turmaService,
+        private readonly AlunoService $alunoService
+    ) {
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $turmas = Turma::with('alunos')
+        $turmas = $this->turmaService->query()->with('alunos')
             ->withCount('alunos')
             ->ordenadas()
             ->paginate(20);
@@ -51,7 +59,7 @@ class TurmaController extends Controller
         $validated['ativa'] = true;
         $validated['segmento'] = $validated['segmento'] ?? 'Ensino Fundamental II';
 
-        Turma::create($validated);
+        $this->turmaService->query()->create($validated);
 
         return redirect()->route('admin.turmas.index')
             ->with('success', 'Turma criada com sucesso!');
@@ -142,7 +150,7 @@ class TurmaController extends Controller
                 'integer',
                 'min:1',
                 function ($attribute, $value, $fail) use ($turma) {
-                    $exists = Aluno::where('turma_id', $turma->id)
+                    $exists = $this->alunoService->query()->where('turma_id', $turma->id)
                         ->where('numero_chamada', $value)
                         ->exists();
                     if ($exists) {
@@ -208,7 +216,7 @@ class TurmaController extends Controller
      */
     public function exportPdf(Request $request)
     {
-        $query = Turma::with(['alunos' => function ($query) {
+        $query = $this->turmaService->query()->with(['alunos' => function ($query) {
             $query->orderBy('numero_chamada');
         }])
             ->withCount('alunos')

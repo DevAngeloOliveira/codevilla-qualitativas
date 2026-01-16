@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Turma;
+use App\Domains\Alunos\Models\Turma;
 use Illuminate\Database\Seeder;
 
 class TurmaSeeder extends Seeder

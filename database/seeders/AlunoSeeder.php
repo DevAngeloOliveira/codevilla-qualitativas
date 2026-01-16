@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Aluno;
-use App\Models\Turma;
+use App\Domains\Alunos\Models\Aluno;
+use App\Domains\Alunos\Models\Turma;
 use Illuminate\Database\Seeder;
 
 class AlunoSeeder extends Seeder

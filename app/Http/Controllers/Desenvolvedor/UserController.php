@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Desenvolvedor;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Domains\Usuarios\Models\User;
+use App\Domains\Usuarios\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -11,9 +12,13 @@ use Inertia\Inertia;
 
 class UserController extends Controller
 {
+    public function __construct(private readonly UserService $userService)
+    {
+    }
+
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = $this->userService->query();
 
         // Filtro por role
         if ($request->filled('role')) {
@@ -54,7 +59,7 @@ class UserController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         $validated['is_active'] = $validated['is_active'] ?? true;
 
-        User::create($validated);
+        $this->userService->create($validated);
 
         return redirect()->route('desenvolvedor.users.index')
             ->with('success', 'Usuário criado com sucesso!');

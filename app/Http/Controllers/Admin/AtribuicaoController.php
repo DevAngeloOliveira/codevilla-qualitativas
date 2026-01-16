@@ -3,15 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Disciplina;
-use App\Models\Turma;
-use App\Models\User;
+use App\Domains\Disciplinas\Services\DisciplinaService;
+use App\Domains\Alunos\Services\TurmaService;
+use App\Domains\Usuarios\Models\User;
+use App\Domains\Usuarios\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class AtribuicaoController extends Controller
 {
+    public function __construct(
+        private readonly UserService $userService,
+        private readonly TurmaService $turmaService,
+        private readonly DisciplinaService $disciplinaService
+    ) {
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -45,15 +53,15 @@ class AtribuicaoController extends Controller
      */
     public function create()
     {
-        $professores = User::where('role', 'professor')
+        $professores = $this->userService->query()->where('role', 'professor')
             ->orderBy('name')
             ->get(['id', 'name', 'email']);
 
-        $turmas = Turma::where('ativa', true)
+        $turmas = $this->turmaService->query()->where('ativa', true)
             ->ordenadas()
             ->get(['id', 'nome', 'ano_letivo', 'turno']);
 
-        $disciplinas = Disciplina::orderBy('nome')
+        $disciplinas = $this->disciplinaService->query()->orderBy('nome')
             ->get(['id', 'nome']);
 
         return Inertia::render('Admin/Atribuicoes/Create', [
@@ -75,7 +83,7 @@ class AtribuicaoController extends Controller
         ]);
 
         // Verificar se a atribuição já existe
-        $turma = Turma::findOrFail($validated['turma_id']);
+        $turma = $this->turmaService->query()->findOrFail($validated['turma_id']);
 
         $existe = DB::table('professor_turma')
             ->where('user_id', $validated['professor_id'])

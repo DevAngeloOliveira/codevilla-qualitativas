@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Professor;
 
 use App\Http\Controllers\Controller;
-use App\Models\Aluno;
-use App\Models\Avaliacao;
-use App\Models\AvaliacaoCriterio;
-use App\Models\Criterio;
-use App\Models\Disciplina;
-use App\Models\Turma;
+use App\Domains\Alunos\Models\Aluno;
+use App\Domains\Alunos\Models\Turma;
+use App\Domains\Alunos\Services\AlunoService;
+use App\Domains\Avaliacoes\Models\Avaliacao;
+use App\Domains\Avaliacoes\Models\AvaliacaoCriterio;
+use App\Domains\Avaliacoes\Models\Criterio;
+use App\Domains\Avaliacoes\Services\AvaliacaoCriterioService;
+use App\Domains\Avaliacoes\Services\AvaliacaoService;
+use App\Domains\Avaliacoes\Services\CriterioService;
+use App\Domains\Disciplinas\Models\Disciplina;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,12 +21,20 @@ use Inertia\Inertia;
 
 class AvaliacaoController extends Controller
 {
+    public function __construct(
+        private readonly AlunoService $alunoService,
+        private readonly AvaliacaoService $avaliacaoService,
+        private readonly AvaliacaoCriterioService $avaliacaoCriterioService,
+        private readonly CriterioService $criterioService
+    ) {
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        /** @var \App\Models\User $user */
+        /** @var \App\Domains\Usuarios\Models\User $user */
         $user = Auth::user();
 
         $anoAtual = date('Y');
@@ -51,7 +63,7 @@ class AvaliacaoController extends Controller
      */
     public function listarAlunos(Turma $turma, Disciplina $disciplina, string $trimestre)
     {
-        /** @var \App\Models\User $user */
+        /** @var \App\Domains\Usuarios\Models\User $user */
         $user = Auth::user();
         $anoAtual = date('Y');
         $temPermissao = DB::table('professor_turma')
@@ -70,7 +82,7 @@ class AvaliacaoController extends Controller
             ->get()
             ->map(function ($aluno) use ($disciplina, $trimestre) {
                 // Buscar avaliação existente
-                $avaliacao = Avaliacao::where('aluno_id', $aluno->id)
+                $avaliacao = $this->avaliacaoService->query()->where('aluno_id', $aluno->id)
                     ->where('disciplina_id', $disciplina->id)
                     ->where('trimestre', $trimestre)
                     ->first();
@@ -93,7 +105,7 @@ class AvaliacaoController extends Controller
      */
     public function avaliar(Aluno $aluno, Disciplina $disciplina, string $trimestre)
     {
-        /** @var \App\Models\User $user */
+        /** @var \App\Domains\Usuarios\Models\User $user */
         $user = Auth::user();
 
         // Verificar permissão
@@ -102,17 +114,17 @@ class AvaliacaoController extends Controller
         }
 
         $aluno->load('turma');
-        $criterios = Criterio::orderBy('ordem')->get();
+        $criterios = $this->criterioService->query()->orderBy('ordem')->get();
 
         // Buscar avaliação existente
-        $avaliacao = Avaliacao::where('aluno_id', $aluno->id)
+        $avaliacao = $this->avaliacaoService->query()->where('aluno_id', $aluno->id)
             ->where('disciplina_id', $disciplina->id)
             ->where('trimestre', $trimestre)
             ->first();
 
         $valoresCriterios = [];
         if ($avaliacao) {
-            $valoresCriterios = AvaliacaoCriterio::where('avaliacao_id', $avaliacao->id)
+            $valoresCriterios = $this->avaliacaoCriterioService->query()->where('avaliacao_id', $avaliacao->id)
                 ->pluck('valor', 'criterio_id')
                 ->toArray();
         }
@@ -121,8 +133,12 @@ class AvaliacaoController extends Controller
         $alunosIds = $aluno->turma->alunos()->orderBy('numero_chamada')->pluck('id');
         $currentIndex = $alunosIds->search($aluno->id);
 
-        $alunoAnterior = $currentIndex > 0 ? Aluno::find($alunosIds[$currentIndex - 1]) : null;
-        $proximoAluno = $currentIndex < $alunosIds->count() - 1 ? Aluno::find($alunosIds[$currentIndex + 1]) : null;
+        $alunoAnterior = $currentIndex > 0
+            ? $this->alunoService->query()->find($alunosIds[$currentIndex - 1])
+            : null;
+        $proximoAluno = $currentIndex < $alunosIds->count() - 1
+            ? $this->alunoService->query()->find($alunosIds[$currentIndex + 1])
+            : null;
 
         return Inertia::render('Professor/Avaliacoes/Avaliar', [
             'aluno' => $aluno,
@@ -141,7 +157,7 @@ class AvaliacaoController extends Controller
      */
     public function store(Request $request)
     {
-        /** @var \App\Models\User $user */
+        /** @var \App\Domains\Usuarios\Models\User $user */
         $user = Auth::user();
 
         $validated = $request->validate([
@@ -154,7 +170,7 @@ class AvaliacaoController extends Controller
         ]);
 
         // Buscar aluno para obter turma_id
-        $aluno = Aluno::findOrFail($validated['aluno_id']);
+        $aluno = $this->alunoService->query()->findOrFail($validated['aluno_id']);
 
         // Verificar permissão
         if (!$user->disciplinas->contains($validated['disciplina_id'])) {
@@ -164,7 +180,7 @@ class AvaliacaoController extends Controller
         DB::beginTransaction();
         try {
             // Buscar ou criar avaliação
-            $avaliacao = Avaliacao::updateOrCreate(
+            $avaliacao = $this->avaliacaoService->query()->updateOrCreate(
                 [
                     'aluno_id' => $validated['aluno_id'],
                     'disciplina_id' => $validated['disciplina_id'],
@@ -183,9 +199,9 @@ class AvaliacaoController extends Controller
             $somaPesos = 0;
 
             foreach ($validated['criterios'] as $criterioId => $valor) {
-                $criterio = Criterio::find($criterioId);
+                $criterio = $this->criterioService->query()->find($criterioId);
 
-                AvaliacaoCriterio::updateOrCreate(
+                $this->avaliacaoCriterioService->query()->updateOrCreate(
                     [
                         'avaliacao_id' => $avaliacao->id,
                         'criterio_id' => $criterioId,
@@ -219,7 +235,7 @@ class AvaliacaoController extends Controller
      */
     public function destroy(Avaliacao $avaliacao)
     {
-        /** @var \App\Models\User $user */
+        /** @var \App\Domains\Usuarios\Models\User $user */
         $user = Auth::user();
 
         // Verificar se o professor pode excluir esta avaliação

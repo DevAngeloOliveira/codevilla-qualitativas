@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Aluno;
-use App\Models\Turma;
+use App\Domains\Alunos\Models\Aluno;
+use App\Domains\Alunos\Models\Turma;
+use App\Domains\Alunos\Services\AlunoService;
+use App\Domains\Alunos\Services\TurmaService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -13,12 +15,18 @@ use Illuminate\Support\Facades\Storage;
 
 class AlunoController extends Controller
 {
+    public function __construct(
+        private readonly AlunoService $alunoService,
+        private readonly TurmaService $turmaService
+    ) {
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = Aluno::with('turma');
+        $query = $this->alunoService->query()->with('turma');
 
         // Filtro por busca (nome ou número de chamada)
         if ($request->filled('search')) {
@@ -50,8 +58,8 @@ class AlunoController extends Controller
         $perPage = $request->get('per_page', 12);
         $alunos = $query->paginate($perPage)->withQueryString();
 
-        $turmas = Turma::orderBy('nome')->get();
-        $turma = $request->turma_id ? Turma::find($request->turma_id) : null;
+        $turmas = $this->turmaService->query()->orderBy('nome')->get();
+        $turma = $request->turma_id ? $this->turmaService->find($request->turma_id) : null;
 
         return Inertia::render('Admin/Alunos/Index', [
             'alunos' => $alunos,
@@ -65,8 +73,8 @@ class AlunoController extends Controller
                 'per_page' => $perPage,
             ],
             'stats' => [
-                'total' => Aluno::count(),
-                'por_turma' => Turma::withCount('alunos')->get()->pluck('alunos_count', 'nome'),
+                'total' => $this->alunoService->count(),
+                'por_turma' => $this->turmaService->query()->withCount('alunos')->get()->pluck('alunos_count', 'nome'),
             ],
         ]);
     }
@@ -87,7 +95,7 @@ class AlunoController extends Controller
     private function calcularNumeroChamada(string $nome, int $turmaId, ?int $alunoId = null): int
     {
         // Buscar todos os alunos da turma exceto o que está sendo editado
-        $query = Aluno::where('turma_id', $turmaId);
+        $query = $this->alunoService->query()->where('turma_id', $turmaId);
 
         if ($alunoId) {
             $query->where('id', '!=', $alunoId);
@@ -176,7 +184,7 @@ class AlunoController extends Controller
      */
     private function reorganizarNumerosChamada(int $turmaId): void
     {
-        $alunos = Aluno::where('turma_id', $turmaId)->get();
+        $alunos = $this->alunoService->query()->where('turma_id', $turmaId)->get();
 
         // Ordenar alfabeticamente
         $alunosOrdenados = $alunos->sortBy(function ($aluno) {
@@ -215,7 +223,7 @@ class AlunoController extends Controller
 
         // Atribuir numero_chamada temporário = total de alunos + 1
         // Será reorganizado logo após o save()
-        $totalAlunos = Aluno::where('turma_id', $turma->id)->count();
+        $totalAlunos = $this->alunoService->countByTurma($turma->id);
         $aluno->numero_chamada = $totalAlunos + 1;
 
         // Gerar UUID antes de processar a foto

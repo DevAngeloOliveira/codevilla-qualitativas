@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Disciplina;
-use App\Models\Turma;
-use App\Models\User;
+use App\Domains\Disciplinas\Models\Disciplina;
+use App\Domains\Alunos\Models\Turma;
+use App\Domains\Usuarios\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
