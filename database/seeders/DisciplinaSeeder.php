@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Domains\Disciplinas\Models\Disciplina;
 
 class DisciplinaSeeder extends Seeder
 {
@@ -12,28 +12,26 @@ class DisciplinaSeeder extends Seeder
      */
     public function run(): void
     {
-        $disciplinas = [
-            ['nome' => 'Português', 'codigo' => 'PORT', 'segmento' => 'Ensino Fundamental II'],
-            ['nome' => 'Matemática', 'codigo' => 'MAT', 'segmento' => 'Ensino Fundamental II'],
-            ['nome' => 'Ciências', 'codigo' => 'CIEN', 'segmento' => 'Ensino Fundamental II'],
-            ['nome' => 'História', 'codigo' => 'HIST', 'segmento' => 'Ensino Fundamental II'],
-            ['nome' => 'Geografia', 'codigo' => 'GEO', 'segmento' => 'Ensino Fundamental II'],
-            ['nome' => 'Inglês', 'codigo' => 'ING', 'segmento' => 'Ensino Fundamental II'],
-            ['nome' => 'Educação Física', 'codigo' => 'ED_FIS', 'segmento' => 'Ensino Fundamental II'],
-            ['nome' => 'Artes', 'codigo' => 'ART', 'segmento' => 'Ensino Fundamental II'],
-            ['nome' => 'Filosofia', 'codigo' => 'FIL', 'segmento' => 'Ensino Fundamental II'],
-            ['nome' => 'Ensino Religioso', 'codigo' => 'ENS_REL', 'segmento' => 'Ensino Fundamental II'],
-        ];
+        try {
+            $disciplinas = config('seeders.disciplinas');
 
-        foreach ($disciplinas as $disciplina) {
-            DB::table('disciplinas')->insert([
-                'nome' => $disciplina['nome'],
-                'codigo' => $disciplina['codigo'],
-                'segmento' => $disciplina['segmento'],
-                'ativa' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $count = 0;
+            foreach ($disciplinas as $disciplina) {
+                Disciplina::firstOrCreate(
+                    ['codigo' => $disciplina['codigo']],
+                    [
+                        'nome' => $disciplina['nome'],
+                        'segmento' => $disciplina['segmento'],
+                        'ativa' => $disciplina['ativa'],
+                    ]
+                );
+                $count++;
+            }
+
+            $this->command->info("✓ Criadas {$count} disciplinas");
+        } catch (\Exception $e) {
+            $this->command->error("❌ Erro ao criar disciplinas: {$e->getMessage()}");
+            throw $e;
         }
     }
 }

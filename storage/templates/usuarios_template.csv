@@ -1,0 +1,10 @@
+# Template de arquivo CSV para importação de usuários (professores, coordenação, desenvolvedores)
+# Formato: nome, email, role (professor|coordenacao|desenvolvedor), password (opcional), ativo (opcional)
+# Exemplo de uso: php artisan import:users usuarios.csv
+
+nome,email,role,password,ativo
+Maria Silva Santos,maria.silva@codevilla.edu.br,professor,,1
+João Pedro Oliveira,joao.oliveira@codevilla.edu.br,professor,,1
+Ana Paula Costa,ana.costa@codevilla.edu.br,coordenacao,senha123,1
+Carlos Roberto Alves,carlos.alves@codevilla.edu.br,desenvolvedor,dev@123,1
+Fernanda Lima,fernanda.lima@codevilla.edu.br,professor,,1

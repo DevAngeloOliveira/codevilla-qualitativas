@@ -3,39 +3,44 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Domains\Usuarios\Models\User;
 
 class ProfessorSeeder extends Seeder
 {
     public function run(): void
     {
-        $professores = [
-            ['nome' => 'Maria Eduarda Santos', 'email' => 'maria.santos@codevilla.edu.br', 'especialidade' => 'Matemática'],
-            ['nome' => 'João Pedro Silva', 'email' => 'joao.silva@codevilla.edu.br', 'especialidade' => 'Português'],
-            ['nome' => 'Ana Carolina Costa', 'email' => 'ana.costa@codevilla.edu.br', 'especialidade' => 'História'],
-            ['nome' => 'Carlos Eduardo Lima', 'email' => 'carlos.lima@codevilla.edu.br', 'especialidade' => 'Geografia'],
-            ['nome' => 'Fernanda Oliveira', 'email' => 'fernanda.oliveira@codevilla.edu.br', 'especialidade' => 'Ciências'],
-            ['nome' => 'Rafael Martins', 'email' => 'rafael.martins@codevilla.edu.br', 'especialidade' => 'Educação Física'],
-            ['nome' => 'Patricia Almeida', 'email' => 'patricia.almeida@codevilla.edu.br', 'especialidade' => 'Inglês'],
-            ['nome' => 'Roberto Ferreira', 'email' => 'roberto.ferreira@codevilla.edu.br', 'especialidade' => 'Arte'],
-        ];
+        try {
+            $professores = [
+                ['nome' => 'Maria Eduarda Santos', 'email' => 'maria.santos@codevilla.edu.br', 'especialidade' => 'Matemática'],
+                ['nome' => 'João Pedro Silva', 'email' => 'joao.silva@codevilla.edu.br', 'especialidade' => 'Português'],
+                ['nome' => 'Ana Carolina Costa', 'email' => 'ana.costa@codevilla.edu.br', 'especialidade' => 'História'],
+                ['nome' => 'Carlos Eduardo Lima', 'email' => 'carlos.lima@codevilla.edu.br', 'especialidade' => 'Geografia'],
+                ['nome' => 'Fernanda Oliveira', 'email' => 'fernanda.oliveira@codevilla.edu.br', 'especialidade' => 'Ciências'],
+                ['nome' => 'Rafael Martins', 'email' => 'rafael.martins@codevilla.edu.br', 'especialidade' => 'Educação Física'],
+                ['nome' => 'Patricia Almeida', 'email' => 'patricia.almeida@codevilla.edu.br', 'especialidade' => 'Inglês'],
+                ['nome' => 'Roberto Ferreira', 'email' => 'roberto.ferreira@codevilla.edu.br', 'especialidade' => 'Artes'],
+            ];
 
-        foreach ($professores as $professor) {
-            // Criar usuário professor
-            $userId = DB::table('users')->insertGetId([
-                'name' => $professor['nome'],
-                'email' => $professor['email'],
-                'password' => Hash::make('professor123'),
-                'role' => 'professor',
-                'is_active' => true,
-                'email_verified_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $count = 0;
+            foreach ($professores as $professor) {
+                User::firstOrCreate(
+                    ['email' => $professor['email']],
+                    [
+                        'name' => $professor['nome'],
+                        'password' => Hash::make('professor123'),
+                        'role' => 'professor',
+                        'is_active' => true,
+                        'email_verified_at' => now(),
+                    ]
+                );
+                $count++;
+            }
 
-            // Criar registro de professor (se houver tabela separada)
-            // Aqui você pode adicionar lógica adicional se tiver uma tabela 'professores' separada
+            $this->command->info("✓ Criados {$count} professores");
+        } catch (\Exception $e) {
+            $this->command->error("❌ Erro ao criar professores: {$e->getMessage()}");
+            throw $e;
         }
     }
 }

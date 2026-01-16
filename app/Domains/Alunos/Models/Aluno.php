@@ -56,11 +56,6 @@ class Aluno extends Model
     }
 
     // Scopes
-    public function scopeActive($query)
-    {
-        return $query->where('ativo', true);
-    }
-
     public function scopeByTurma($query, $turmaId)
     {
         return $query->where('turma_id', $turmaId);

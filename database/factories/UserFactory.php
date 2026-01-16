@@ -32,8 +32,50 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'role' => 'professor',
+            'is_active' => true,
             'remember_token' => Str::random(10),
         ];
+    }
+
+    /**
+     * Indicate that the user is a professor.
+     */
+    public function professor(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'role' => 'professor',
+        ]);
+    }
+
+    /**
+     * Indicate that the user is coordenacao.
+     */
+    public function coordenacao(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'role' => 'coordenacao',
+        ]);
+    }
+
+    /**
+     * Indicate that the user is desenvolvedor.
+     */
+    public function desenvolvedor(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'role' => 'desenvolvedor',
+        ]);
+    }
+
+    /**
+     * Indicate that the user is inactive.
+     */
+    public function inactive(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'is_active' => false,
+        ]);
     }
 
     /**
@@ -41,7 +83,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

@@ -21,9 +21,9 @@ class DashboardController extends Controller
     public function index()
     {
         $stats = [
-            'total_alunos' => $this->alunoService->query()->active()->count(),
-            'total_turmas' => $this->turmaService->query()->active()->anoAtual()->count(),
-            'total_professores' => $this->userService->query()->professores()->active()->count(),
+            'total_alunos' => $this->alunoService->query()->count(),
+            'total_turmas' => $this->turmaService->query()->anoAtual()->count(),
+            'total_professores' => $this->userService->query()->professores()->count(),
             'total_avaliacoes' => $this->avaliacaoService->query()->whereYear('created_at', date('Y'))->count(),
         ];
 

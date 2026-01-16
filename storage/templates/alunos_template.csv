@@ -1,0 +1,15 @@
+# Template de arquivo CSV para importação de alunos
+# Formato: nome, numero_chamada, turma (opcional se turma_id fornecida), ano_letivo (opcional), ativo (opcional)
+# Exemplo de uso: php artisan import:alunos alunos.csv --turma=1
+
+nome,numero_chamada,turma,ano_letivo,ativo
+Ana Carolina Silva,1,6º A,2026,1
+Bruno Santos Oliveira,2,6º A,2026,1
+Carlos Eduardo Lima,3,6º A,2026,1
+Daniela Ferreira Costa,4,6º A,2026,1
+Eduardo Rodrigues Alves,5,6º A,2026,1
+Fernanda Souza Martins,6,6º A,2026,1
+Gabriel Pereira Santos,7,6º A,2026,1
+Helena Costa Ribeiro,8,6º A,2026,1
+Igor Almeida Barros,9,6º A,2026,1
+Juliana Cardoso Teixeira,10,6º A,2026,1
