@@ -14,18 +14,6 @@ echo "📡 Usando porta: $PORT"
 echo "📁 Configurando diretórios de escrita..."
 mkdir -p /tmp/storage/{app/public,framework/{cache/data,sessions,testing,views},logs}
 mkdir -p /tmp/bootstrap/cache
-mkdir -p /tmp/database
-
-# Criar arquivo SQLite em /tmp se estiver usando SQLite
-if [ "$DB_CONNECTION" = "sqlite" ]; then
-    export DB_DATABASE="/tmp/database/database.sqlite"
-    if [ ! -f "$DB_DATABASE" ]; then
-        echo "📝 Criando arquivo SQLite em /tmp..."
-        touch "$DB_DATABASE"
-        chmod 666 "$DB_DATABASE"
-    fi
-    chmod 777 /tmp/database
-fi
 
 # Ajustar permissões em /tmp
 chmod -R 777 /tmp/storage
@@ -48,12 +36,7 @@ fi
 
 # Executar migrations automaticamente (SEM seeders para evitar timeout)
 echo "📊 Executando migrations..."
-# Usar migrate:fresh para PostgreSQL para evitar problemas com migrations anteriores
-if [ "$DB_CONNECTION" = "pgsql" ]; then
-    php artisan migrate:fresh --force || echo "⚠️  Erro ao executar migrations, mas continuando..."
-else
-    php artisan migrate --force || echo "⚠️  Erro ao executar migrations, mas continuando..."
-fi
+php artisan migrate --force || echo "⚠️  Erro ao executar migrations, mas continuando..."
 
 # Criar usuário desenvolvedor padrão se não existir
 echo "👤 Criando usuário desenvolvedor padrão..."

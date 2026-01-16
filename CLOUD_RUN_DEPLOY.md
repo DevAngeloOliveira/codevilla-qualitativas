@@ -50,7 +50,7 @@ gcloud run deploy codevilla-qualitativas \
   --region=us-central1 \
   --platform=managed \
   --allow-unauthenticated \
-  --set-env-vars="APP_ENV=production,APP_DEBUG=false,DB_CONNECTION=sqlite" \
+  --set-env-vars="APP_ENV=production,APP_DEBUG=false,DB_CONNECTION=pgsql" \
   --max-instances=10 \
   --memory=1Gi \
   --cpu=1 \
@@ -120,8 +120,12 @@ APP_NAME='Codevilla Qualitativas',
 APP_ENV=production,
 APP_DEBUG=false,
 APP_URL=https://sua-url.run.app,
-DB_CONNECTION=sqlite,
-DB_DATABASE=/var/www/html/database/database.sqlite,
+DB_CONNECTION=pgsql,
+DB_HOST=db,
+DB_PORT=5432,
+DB_DATABASE=postgres,
+DB_USERNAME=postgres,
+DB_PASSWORD=postgres,
 LOG_CHANNEL=stderr,
 SESSION_DRIVER=cookie,
 CACHE_DRIVER=file,
@@ -152,7 +156,7 @@ gcloud run deploy codevilla-qualitativas \
   --region=us-central1 \
   --add-cloudsql-instances=SEU_PROJECT_ID:us-central1:codevilla-db \
   --set-env-vars="
-DB_CONNECTION=mysql,
+DB_CONNECTION=pgsql,
 DB_HOST=/cloudsql/SEU_PROJECT_ID:us-central1:codevilla-db,
 DB_PORT=3306,
 DB_DATABASE=codevilla_qualitativas,
@@ -281,7 +285,7 @@ RUN chown -R www-data:www-data /var/www/html/storage
 ## ✅ Checklist de Deploy
 
 - [ ] APP_KEY configurada
-- [ ] DB_CONNECTION configurada (sqlite ou mysql)
+- [ ] DB_CONNECTION configurada (pgsql)
 - [ ] APP_URL configurada com URL do Cloud Run
 - [ ] LOG_CHANNEL=stderr (para logs no Cloud Logging)
 - [ ] APP_DEBUG=false em produção
@@ -313,7 +317,7 @@ Para tráfego baixo-médio, o custo é **praticamente zero**!
 ## 📚 Documentação Oficial
 
 - [Cloud Run Docs](https://cloud.google.com/run/docs)
-- [Cloud SQL for MySQL](https://cloud.google.com/sql/docs/mysql)
+- [Cloud SQL for PostgreSQL](https://cloud.google.com/sql/docs/postgres)
 - [Secret Manager](https://cloud.google.com/secret-manager/docs)
 
 ---
