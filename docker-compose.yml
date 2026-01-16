@@ -1,6 +1,26 @@
 version: '3.8'
 
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: codevilla-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hgeducacao_db
+      POSTGRES_USER: laravel_user
+      POSTGRES_PASSWORD: nasus123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - codevilla-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U laravel_user -d hgeducacao_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   app:
     build:
       context: .
@@ -11,7 +31,9 @@ services:
     container_name: codevilla-app
     restart: unless-stopped
     working_dir: /var/www/html
-    network_mode: bridge
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
       # Otimizado para Windows - apenas arquivos essenciais
       - ./.env:/var/www/html/.env:delegated
@@ -27,15 +49,17 @@ services:
       - public-build-data:/var/www/html/public/build
     ports:
       - "8000:8080"
+    networks:
+      - codevilla-network
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
       - APP_URL=http://localhost:8000
       - DB_CONNECTION=pgsql
-      - DB_HOST=192.168.65.254
+      - DB_HOST=db
       - DB_PORT=5432
       - DB_DATABASE=hgeducacao_db
-      - DB_USERNAME=postgres
+      - DB_USERNAME=laravel_user
       - DB_PASSWORD=nasus123
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
@@ -44,7 +68,13 @@ services:
       retries: 3
       start_period: 40s
 
+networks:
+  codevilla-network:
+    driver: bridge
+
 volumes:
+  postgres-data:
+    driver: local
   storage-data:
     driver: local
   cache-data:

@@ -16,10 +16,12 @@ class Aluno extends Model
         'numero_chamada',
         'turma_id',
         'foto',
+        'ativo',
     ];
 
     protected $casts = [
         'numero_chamada' => 'integer',
+        'ativo' => 'boolean',
     ];
 
     protected $appends = [

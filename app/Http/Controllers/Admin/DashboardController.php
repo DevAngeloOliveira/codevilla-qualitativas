@@ -16,8 +16,7 @@ class DashboardController extends Controller
         private readonly TurmaService $turmaService,
         private readonly UserService $userService,
         private readonly AvaliacaoService $avaliacaoService
-    ) {
-    }
+    ) {}
 
     public function index()
     {
